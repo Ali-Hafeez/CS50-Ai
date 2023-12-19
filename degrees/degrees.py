@@ -69,6 +69,11 @@ def main():
     if target is None:
         sys.exit("Person not found.")
 
+    """ FOR TESTING WHAT IS IN DICTIONARY
+    for key, value in names.items():
+        print(f'{key}: {value}')
+    """
+
     path = shortest_path(source, target)
 
     if path is None:
@@ -92,7 +97,8 @@ def shortest_path(source, target):
     If no possible path, returns None.
     """
 
-    # TODO
+    print(neighbors_for_person(source))
+
     raise NotImplementedError
 
 
