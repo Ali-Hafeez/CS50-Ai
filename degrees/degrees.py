@@ -88,18 +88,67 @@ def main():
             movie = movies[path[i + 1][0]]["title"]
             print(f"{i + 1}: {person1} and {person2} starred in {movie}")
 
-
 def shortest_path(source, target):
+        """
+        Returns the shortest list of (movie_id, person_id) pairs
+        that connect the source to the target.
+
+        If no possible path, returns None.
+        """
+
+        def solve(source, target):
+            num_explored = 0
+
+            # initialize the frontier to the starting position
+            start = Node(state=source, parent=None, action=None)
+            frontier = QueueFrontier()
+            frontier.add(start)
+
+            explored = set()
+
+            while True:
+                if frontier.empty():
+                    return None  # No solution or not possible
+
+                node = frontier.remove()
+                num_explored += 1
+
+                explored.add(node.state)
+
+                for action, state in neighbors_for_person(node.state):
+                    if not frontier.contains_state(state) and state not in explored:
+                        if node.state == target:
+                            actions = []
+                            cells = []
+
+                            while node.parent is not None:
+                                actions.append(node.action)
+                                cells.append(node.state)
+                                node = node.parent
+
+                            actions.reverse()
+                            cells.reverse()
+                            return list(zip(actions, cells))  # Return the solution
+
+                        child = Node(state=state, parent=node, action=action)
+                        frontier.add(child)
+
+        return solve(source, target)
+
+    #print(neighbors_for_person(source))
+
+  #  raise NotImplementedError
+def neighbors_for_person(person_id):
     """
-    Returns the shortest list of (movie_id, person_id) pairs
-    that connect the source to the target.
-
-    If no possible path, returns None.
+    Returns (movie_id, person_id) pairs for people
+    who starred with a given person.
     """
-
-    print(neighbors_for_person(source))
-
-    raise NotImplementedError
+    movie_ids = people[person_id]["movies"]
+    neighbors = set()
+    for movie_id in movie_ids:
+        for person_id in movies[movie_id]["stars"]:
+            neighbors.add((movie_id, person_id))
+    return neighbors
 
 
 def person_id_for_name(name):
@@ -128,17 +177,6 @@ def person_id_for_name(name):
         return person_ids[0]
 
 
-def neighbors_for_person(person_id):
-    """
-    Returns (movie_id, person_id) pairs for people
-    who starred with a given person.
-    """
-    movie_ids = people[person_id]["movies"]
-    neighbors = set()
-    for movie_id in movie_ids:
-        for person_id in movies[movie_id]["stars"]:
-            neighbors.add((movie_id, person_id))
-    return neighbors
 
 
 if __name__ == "__main__":
